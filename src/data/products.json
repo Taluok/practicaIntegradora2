@@ -1,0 +1,112 @@
+[
+    {
+        "id": 1,
+        "status": true,
+        "title": "Smartphone XYZ",
+        "description": "Un smartphone de última generación con pantalla OLED y cámara de alta resolución.",
+        "price": 799.99,
+        "thumbnail": "phone1.jpg",
+        "code": "P1001",
+        "stock": 50,
+        "category": "Electrónicos"
+    },
+    {
+        "id": 2,
+        "status": true,
+        "title": "Laptop Ultra",
+        "description": "Una potente laptop para trabajos intensivos y gaming.",
+        "price": 1299.99,
+        "thumbnail": "laptop1.jpg",
+        "code": "P1002",
+        "stock": 30,
+        "category": "Computadoras"
+    },
+    {
+        "id": 3,
+        "status": true,
+        "title": "Smartwatch Fitness",
+        "description": "Un reloj inteligente diseñado para seguimiento de actividad física y notificaciones.",
+        "price": 149.99,
+        "thumbnail": "smartwatch1.jpg",
+        "code": "P1003",
+        "stock": 20,
+        "category": "Electrónicos"
+    },
+    {
+        "id": 4,
+        "status": true,
+        "title": "Auriculares Bluetooth",
+        "description": "Auriculares inalámbricos con cancelación de ruido y gran calidad de sonido.",
+        "price": 89.99,
+        "thumbnail": "headphones1.jpg",
+        "code": "P1004",
+        "stock": 40,
+        "category": "Electrónicos"
+    },
+    {
+        "id": 5,
+        "status": true,
+        "title": "Televisor LED 4K",
+        "description": "Un televisor de alta definición con resolución 4K y aplicaciones integradas.",
+        "price": 599.99,
+        "thumbnail": "tv1.jpg",
+        "code": "P1005",
+        "stock": 10,
+        "category": "Electrónicos"
+    },
+    {
+        "id": 6,
+        "status": true,
+        "title": "Cafetera Automática",
+        "description": "Una cafetera que prepara café de calidad con solo presionar un botón.",
+        "price": 79.99,
+        "thumbnail": "coffee1.jpg",
+        "code": "P1006",
+        "stock": 25,
+        "category": "Electrónicos"
+    },
+    {
+        "id": 7,
+        "status": true,
+        "title": "Bicicleta de Montaña",
+        "description": "Una bicicleta resistente para aventuras en la montaña.",
+        "price": 449.99,
+        "thumbnail": "bike1.jpg",
+        "code": "P1007",
+        "stock": 15,
+        "category": "Deportes"
+    },
+    {
+        "id": 8,
+        "status": true,
+        "title": "Tablet 10 Pulgadas",
+        "description": "Una tablet con una pantalla grande y rendimiento rápido.",
+        "price": 199.99,
+        "thumbnail": "tablet1.jpg",
+        "code": "P1008",
+        "stock": 35,
+        "category": "Electrónicos"
+    },
+    {
+        "id": 9,
+        "status": true,
+        "title": "Aspiradora Robótica",
+        "description": "Una aspiradora automática que limpia tu hogar sin esfuerzo.",
+        "price": 199.99,
+        "thumbnail": "robotvacuum1.jpg",
+        "code": "P1009",
+        "stock": 20,
+        "category": "Electrónicos"
+    },
+    {
+        "id": 10,
+        "status": true,
+        "title": "Impresora Multifunción",
+        "description": "Una impresora que imprime, escanea y copia documentos con alta calidad.",
+        "price": 149.99,
+        "thumbnail": "printer1.jpg",
+        "code": "P1010",
+        "stock": 30,
+        "category": "Electrónicos"
+    }
+]
