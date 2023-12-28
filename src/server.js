@@ -1,63 +1,58 @@
-import express from 'express';
-import cookieParser from 'cookie-parser';
-import session from 'express-session';
-import MongoStore from 'connect-mongo';
-import handlebars from 'express-handlebars';
-import { __dirname } from "./utils.js";
+import express from "express";
+import morgan from "morgan";
+import MainRouter from "./routes/index.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
-import passport from 'passport';
-import productsRouter from './routes/products.router.js';
-import userRouter from './routes/user.router.js';
-import viewRouter from './routes/views.router.js';
-import productRouter from './routes/product.router.js';
-import cartRouter from './routes/cart.router.js';
-import './db/database.js';
-import { MONGOATLAS } from './db/database.js';
-import "./passport/jwt.js";
+import { initMongoDB } from "./config/connection.js";
+import { __dirname } from "./utils.js";
+import handlebars from "express-handlebars";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import passport from "passport";
+import 'dotenv/config';
 
+const mainRouter = new MainRouter();
 const app = express();
 
-const mongoStoreOptions = {
-    store: new MongoStoreInstance({
-        mongoUrl: MONGOATLAS,
-        ttl: 120,
-        crypto: {
-            secret: '1234'
-        }
-    }),
-    secret: '1234',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 120000,
-    },
-};
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: true,
+        cookie: {
+            maxAge: 10000
+        },
+        store: new MongoStore({
+            mongoUrl: process.env.MONGO_URL,
+            ttl: 10,
+        }),
+    })
+);
 
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
+app.use(passport.initialize());
+app.use(passport.session());
 
-// Configuración de handlebars
 app.engine('handlebars', handlebars.engine());
 app.set('view engine', 'handlebars');
 app.set('views', __dirname + '/views');
 
-app.use(session(mongoStoreOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
+app.use('/api', mainRouter.getRouter());
 
-// Configuración de Passport para sesiones
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(errorHandler);
 
-// Rutas
-app.use('/login', loginRouter);
-app.use('/products', productsRouter);
-app.use('/', viewRouter);
-app.use('/users', userRouter);
-app.use('/products', productRouter);
-app.use('/cart', cartRouter);
+const persistence = process.env.PERSISTENCE;
 
-// Ruta para obtener el usuario actual
-router.get('/current', passport.authenticate('current', { session: false }), loginJwt);
+if (persistence === 'MONGO') {
+    try {
+        await initMongoDB();
+        console.log('MondoDB connection successful');
+    } catch (error) {
+        console.log(error, 'Error connecting to MongoDB')
+    };
+};
 
-const PORT = 8080;
-app.listen(PORT, () => console.log(`Server on port ${PORT}`));
+const PORT = process.env.PORT
+
+app.listen(PORT, () => console.log(`SERVER UP ON PORT: ${PORT}`));
