@@ -1,41 +1,55 @@
-import { UserModel } from "../models/user.model.js";
+import Services from "./class.services.js";
+import UserMongoDao from "../daos/mongodb/users/user.dao.js";
+const userDao = new UserMongoDao();
+import jwt from "jsonwebtoken";
+import "dotenv/config";
 
-export default class UserServices {
-    async findByEmail(email){
-        return await UserModel.findOne({email});
+const SECRET_KEY_JWT = process.env.SECRET_KEY_JWT;
+
+export default class UserService extends Services {
+    constructor() {
+        super(userDao);
     };
 
-    async getUsers(){
-        try{
-            const users = await UserModel.find();
-            return users;
-        }catch(error){
-            next(error)
+    #generateToken(user) {
+        try {
+            const payload = {
+                userId: user._id,
+            };
+            const token = jwt.sign(payload, SECRET_KEY_JWT, { expiresIn: "10m" });
+            return token;
+        } catch (error) {
+            console.log('Error al generar el token:', error);
+            return null;
         }
     };
 
+
     async register(user) {
         try {
-            const { email, password } = user;
-            if(email === 'adminCoder@coder.com' && password === 'adminCoder123'){
-                return await UserModel.create({ ...user, role: 'admin' })
-            }
-            const userExist = await this.findByEmail(email);
-            if(!userExist){
-                return await UserModel.create(user)
-            }else return false;
-        }catch (error){
+            return await userDao.register(user);
+        } catch (error) {
             console.log(error);
         };
     };
 
-    async login(email, password){
-        try{
-            const userExist = await UserModel.findOne({email, password});
-            if(!userExist) return false;
-            else return userExist;
-        }catch(error){
-            console.log(error);
+    async login(user) {
+        try {
+            const userExist = await userDao.login(user);
+
+            if (userExist) {
+                const token = this.#generateToken(userExist);
+                if (!token) {
+                    console.log("Error al generar el token");
+                    return null;
+                };
+                return token;
+            } else {
+                return null;
+            };
+        } catch (error) {
+            console.log('user.service', error);
+            throw error;
         };
     };
 };

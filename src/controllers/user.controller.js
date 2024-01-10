@@ -1,36 +1,57 @@
+import Controllers from "./class.controller.js";
 import UserService from "../services/user.services.js";
+import { createResponse } from "../utils.js";
+
 const userService = new UserService();
-import { generateToken } from "../jwt/auth.js";
 
-export const register = async (req, res, next) => {
-    try {
-        const { first_name, last_name, email, age, password } = req.body;
-        const exist = await userService.getByEmail(email);
-        if (exist) return res.status(400).json({ msg: 'User already exists' });
-        const user = { first_name, last_name, email, age, password }
-        const newUser = await userService.createUser(user);
-        res.json({
-            msg: 'Register OK',
-            newUser
-        });
-    } catch (error) {
-        next(error);
-    }
-};
+export default class UserController extends Controllers {
+    constructor() {
+        super(userService);
+    };
 
-export const login = async (req, res, next) => {
-    try {
-        const { email, password } = req.body;
-        const user = await userService.loginUser({ email, password });
-        if (!user) {
-            res.json({ msg: 'Invalid credentials' });
-        } else {
-            const access_token = generateToken(user);
-            res
-                .cookie('token', access_token, { httpOnly: true })
-                .json({ msg: 'Login OK', access_token });
+    register = async (req, res, next) => {
+        try {
+            const newUser = await userService.register(req.body);
+            if (!newUser) {
+                res.redirect(`/views/errorRegister`)
+                createResponse(res, 404, "Sorry, user email already exist");
+            } else {
+                res.redirect(`/views`);
+                createResponse(res, 200, newUser);
+            }
+
+        } catch (error) {
+            next(error.message);
+        };
+    };
+
+    login = async (req, res, next) => {
+        try {
+            const token = await userService.login(req.body);
+            if (!token == null) {
+                res.redirect('/views/errorLogin');
+                createResponse(res, 404, "Error login");
+            }
+            else {
+                res.header("Authorization", token);
+                createResponse(res, 200, token);
+            }
+        } catch (error) {
+            next(error.message);
         }
-    } catch (error) {
-        next(error);
-    }
+    };
+
+    profile = (req, res, next) => {
+        try {
+            const { first_name, last_name, email, role } = req.user;
+            createResponse(res, 200, {
+                first_name,
+                last_name,
+                email,
+                role,
+            });
+        } catch (error) {
+            next(error.message);
+        };
+    };
 };

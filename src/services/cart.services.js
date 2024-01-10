@@ -1,93 +1,51 @@
-import { CartModel } from '../models/cart.model.js';
+import Services from "./class.services.js";
+import CartMongoDao from "../daos/mongodb/carts/cart.dao.js";
 
-export default class CartServices {
-    async getAll(page = 1, limit = 10) {
-        try {
-            const response = await CartModel.find();
-            return response;
-        } catch (error) {
-            console.log('Error al obtener carritos', error);
-        }
+export default class CartService extends Services {
+    constructor() {
+        super(new CartMongoDao());
     }
 
-    async createCart(obj) {
+    async addProductToCart(idCart, idProduct) {
         try {
-            return await CartModel.create(obj);
+            return await this.dao.addProductToCart(idCart, idProduct);
         } catch (error) {
             console.log(error);
+            throw error;
         }
     }
 
-    async getCartById(id) {
+    async removeSingleProduct(idCart, idProduct) {
         try {
-            return await CartModel.findById(id);
+            return await this.dao.removeSingleProduct(idCart, idProduct);
         } catch (error) {
             console.log(error);
-            return null;
+            throw error;
         }
     }
 
-    async deleteCart(id) {
+    async removeAllProducts(idCart) {
         try {
-            return await CartModel.findByIdAndDelete(id);
-        } catch (error) {
-            return error;
-        }
-    }
-
-    async getCartIdInJson(id) {
-        try {
-            id = parseInt(id);
-            const carts = await this.getCarts();
-            const cartId = carts.findIndex((c) => c.id === id);
-            return cartId || null;
-        } catch (error) {
-            return error;
-        }
-    }
-
-    async saveProductToCart(idCart, arrProducts) {
-        try {
-            let cart = await CartModel.findById(idCart);
-            if (arrProducts.products) {
-                arrProducts.products.forEach((idProduct) => {
-                    cart.products.push(idProduct);
-                });
-            }
-            await cart.save();
-            cart = await CartModel.findById(idCart).populate('products');
-            return cart;
+            return await this.dao.removeAllProducts(idCart);
         } catch (error) {
             console.log(error);
+            throw error;
         }
     }
-
-    async deleteProductFromCart(cartId, productId) {
+    async updateProductQuantity(idCart, idProduct, quantity) {
         try {
-            let cart = await CartModel.findById(cartId);
-            for (let i = 0; i < cart.products.length; i++) {
-                const element = cart.products[i];
-                if (element._id.valueOf() == productId) {
-                    cart.products.splice(i, 1);
-                    await cart.save();
-                    return true;
-                }
-            }
+            return await this.dao.updateProductQuantity(idCart, idProduct, quantity);
         } catch (error) {
             console.log(error);
+            throw error;
         }
     }
-
-    async updCartProductsAmount(cartId, productId, body) {
+    async cartUpdate(idCart, products) {
         try {
-            let cart = await CartModel.findById(cartId);
-            for (let i = 0; i < body.quantity; i++) {
-                await cart.products.push(productId);
-                await cart.save();
-            }
-            return cart;
+            return await this.dao.cartUpdate(idCart, products);
         } catch (error) {
             console.log(error);
+            throw error;
         }
     }
-}
+}	
