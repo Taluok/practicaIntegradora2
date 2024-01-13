@@ -2,7 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import MainRouter from "./routes/index.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
-import { initMongoDB } from "./config/connection.js";
+
 import { __dirname, mongoStoreOptions } from "./utils.js";
 import handlebars from "express-handlebars";
 import session from "express-session";
@@ -29,17 +29,6 @@ app.use(morgan('dev'));
 app.use('/api', mainRouter.getRouter());
 app.use('/views', viewsRouter);
 app.use(errorHandler);
-
-const persistence = process.env.PERSISTENCE;
-
-if(persistence === 'MONGO') {
-    try{
-        await initMongoDB();
-        console.log('MondoDB connection successful');
-    }catch(error){
-        console.log(error, 'Error connecting to MongoDB')
-    };
-};
 
 const PORT = process.env.PORT 
 

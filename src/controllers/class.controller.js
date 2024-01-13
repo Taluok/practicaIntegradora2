@@ -21,7 +21,7 @@ export default class Controllers {
             if(!item)
                 createResponse(res, 404, {
                     method: "getById",
-                    error: "Disculpa , Item no encontrado",
+                    error: "Sorry, Item not found",
                 });
             else createResponse(res, 200, item);
         }catch(error){
@@ -35,7 +35,7 @@ export default class Controllers {
             if(!newItem)
                 createResponse (res, 404, {
                     method: "create",
-                    error: "Disculpa, error al crear el item"
+                    error: "Sorry, error tu create item"
                 });
             else createResponse(res, 200, newItem);
         }catch(error){
@@ -50,7 +50,7 @@ export default class Controllers {
             if(!item)
                 createResponse (res, 404, {
                     method: "update",
-                    error: "Disculpa, error al traer el item"
+                    error: "Sorry, error to update item"
                 })
             const itemUpd = await this.service.update(id, req.body);
             createResponse(res, 200, itemUpd);
@@ -66,7 +66,7 @@ export default class Controllers {
             if(!item)
                 createResponse(res, 404, {
                     method: "delete",
-                    error: "disculpa , error al eliminar el item"
+                    error: "Sorry, error to delete item"
                 });
             const itemUpd = await this.service.delete(id);
             createResponse(res, 200, itemUpd);
