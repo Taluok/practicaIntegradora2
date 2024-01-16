@@ -2,9 +2,11 @@
   "name": "2dapracticaintegradora",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main" :"src/server.js",
   "type": "module",
   "scripts": {
+    "start":"node .",
+    "dev":"node --watch .", 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
