@@ -1,6 +1,8 @@
 import Controller from "./class.controller.js";
 import CartService from "../services/cart.services.js";
 import { createResponse } from "../utils.js";
+import TicketService from "../services/ticket.service.js";
+
 export default class CartController extends Controller {
     constructor() {
         super(new CartService());
@@ -55,5 +57,18 @@ export default class CartController extends Controller {
             next(error.message);
         }
     }
+    createTicket = async (req, res) => {
+        try {
+            console.log('ticket controller')
+            const { cid } = req.params
+            const user = req.session.user
+            const response = await TicketService.createTicket(user, cid)
+            res.status(200).json(response)
 
-}	
+        } catch (error) {
+            throw error
+        }
+    }
+};
+
+	
