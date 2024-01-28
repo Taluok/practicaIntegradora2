@@ -3,12 +3,13 @@ import morgan from "morgan";
 import MainRouter from "./routes/index.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
-import { __dirname, mongoStoreOptions } from "./utils.js";
+import { __dirname, mongoStoreOptions } from "./utils/utils.js";
 import handlebars from "express-handlebars";
 import session from "express-session";
 import passport from "passport";
 import 'dotenv/config';
 import viewsRouter from "./routes/views.router.js";
+import logger from './logger.js';
 
 
 const mainRouter = new MainRouter();
@@ -30,7 +31,18 @@ app.use('/api', mainRouter.getRouter());
 app.use('/views', viewsRouter);
 app.use(errorHandler);
 
-const PORT = process.env.PORT 
+app.get('/loggerTest', (req, res) => {
+    logger.debug('Debug message');
+    logger.http('HTTP message');
+    logger.info('Info message');
+    logger.warning('Warning message');
+    logger.error('Error message');
+    logger.fatal('Fatal message');
+    res.send('Logs enviados');
+});
 
-app.listen(PORT, ()=> console.log(`SERVER UP ON PORT: ${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    logger.info(`Servidor corriendo en el puerto ${PORT}`);
+});
 

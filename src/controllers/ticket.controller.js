@@ -1,42 +1,41 @@
-import TicketService from "../services/ticket.service.js";
-import { createResponse } from "../utils.js";
-import TicketDTO from "../dto/ticket.DTO.js";
+import Controllers from "./class.controller.js";
+import TicketService from "../services/ticket.services.js";
+import { HttpResponse } from "../utils/http.response.js";
 
-const ticketService = new TicketService();
 
-export default class TicketController {
-    constructor() {}
+const httpResponse = new HttpResponse();
 
-    getTicketById = async (req, res, next) => {
-        try {
-            const { id } = req.params;
-            const ticketEntity = await ticketService.getById(id);
 
-            if (!ticketEntity) {
-                createResponse(res, 404, { error: "Ticket not found" });
-            } else {
-                const ticketDTO = TicketDTO.fromEntity(ticketEntity);
-                createResponse(res, 200, ticketDTO);
-            }
-        } catch (error) {
-            next(error.message);
-        }
+const service = new TicketService();
+
+// Clase TicketController que extiende de Controllers
+export default class TicketController extends Controllers {
+    constructor() {
+        super(service);
     };
 
-    //  crear un ticket
-    createTicket = async (req, res, next) => {
+    // Método para generar un ticket
+    generarTicket = async (req, res, next) => {
         try {
-            // Lógica para crear un nuevo ticket
-            const newTicket = await ticketService.create(req.body);
+            const { _user} = req.user; // Obtiene el id del usuario 
+            const { cartId } = req.params; // Obtiene el id del carrito 
 
-            if (!newTicket) {
-                createResponse(res, 500, { error: "Error creating ticket" });
+            // Genera un ticket utilizando el servicio
+            const ticket = await service.generateTicket(_user, cartId);
+
+            // Si no se pudo generar el ticket, devuelve un mensaje de error
+            if (!ticket) {
+                return (
+                    httpResponse.NotFound(res, 'Error al generar el ticket')
+                )
             } else {
-                const ticketDTO = TicketDTO.fromEntity(newTicket);
-                createResponse(res, 201, ticketDTO);
-            }
+                // Si se generó el ticket correctamente, devuelve el ticket generado
+                return (
+                    httpResponse.Ok(res, ticket)
+                )
+            };
         } catch (error) {
-            next(error.message);
-        }
+            next(error);
+        };
     };
-}
+};

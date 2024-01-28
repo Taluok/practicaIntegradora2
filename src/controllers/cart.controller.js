@@ -1,74 +1,87 @@
-import Controller from "./class.controller.js";
+import Controllers from "./class.controller.js";
 import CartService from "../services/cart.services.js";
-import { createResponse } from "../utils.js";
-import TicketService from "../services/ticket.service.js";
+import { HttpResponse, errorsDictionary } from "../utils/http.response.js";
 
-export default class CartController extends Controller {
+const httpResponse = new HttpResponse();
+const service = new CartService();
+
+export default class CartController extends Controllers {
     constructor() {
-        super(new CartService());
-    }
+        super(service);
+    };
 
-    addProductToCart = async (req, res, next) =>{
-        try {
-            const { id, pId } = req.params;
-            const data = await this.service.addProductToCart(id, pId);
-            createResponse(res, 200, data)
-        } catch (error) {
-            next(error.message);
-        }
-    }
-
-    removeSingleProduct = async (req, res, next) =>{
-        try {
-            const { id, pId } = req.params;
-            const data = await this.service.removeSingleProduct(id, pId);
-            res.status(200).json(data);
-        } catch (error) {
-            next(error.message);
-        }
-    }
-
-    removeAllProducts = async (req, res, next) =>{
+    async remove(req, res, next) {
         try {
             const { id } = req.params;
-            const data = await this.service.removeAllProducts(id);
-            res.status(200).json(data);
+            const cartDel = await service.remove(id);
+            if (!cartDel) {
+                return httpResponse.NoEncontrado(res, errorsDictionary.ERROR_DELETE_CART);
+            } else {
+                return httpResponse.Ok(res, cartDel);
+            }
         } catch (error) {
-            next(error.message);
+            next(error);
         }
     }
-    updateProductQuantity = async(req, res, next)=>{
+
+    async addProdToCart(req, res, next) {
         try {
-            const { id, pId } = req.params;
+            const { idCart, idProd } = req.params;
+            const newProdToUserCart = await service.addProdToCart(idCart, idProd);
+            if (!newProdToUserCart) {
+                return httpResponse.NoEncontrado(res, errorsDictionary.ERROR_ADD_TO_CART);
+            } else {
+                return httpResponse.Ok(res, newProdToUserCart);
+            }
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async removeProdToCart(req, res, next) {
+        try {
+            const { idCart, idProd } = req.params;
+            const delProdToUserCart = await service.removeProdToCart(idCart, idProd);
+            if (!delProdToUserCart) {
+                return httpResponse.NoEncontrado(res, errorsDictionary.ERROR_DELETE_TO_CART);
+            } else {
+                return httpResponse.Ok(res, delProdToUserCart);
+            }
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async updateProdQuantityToCart(req, res, next) {
+        try {
+            const { idCart, idProd } = req.params;
             const { quantity } = req.body;
-            const data = await this.service.updateProductQuantity(id, pId, quantity);
-            res.status(200).json(data);
+            const updateProdQuantity = await service.updateProdQuantityToCart(
+                idCart,
+                idProd,
+                quantity
+            );
+            if (!updateProdQuantity) {
+                return httpResponse.NoEncontrado(res, "Error al actualizar la cantidad del producto en el carrito");
+            } else {
+                return httpResponse.Ok(res, updateProdQuantity);
+            }
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async clearCart(req, res, next) {
+        try {
+            const { idCart } = req.params;
+            const clearCart = await service.clearCart(idCart);
+            if (!clearCart) {
+                return httpResponse.NoEncontrado(res, "Error al limpiar el carrito");
+            } else {
+                return httpResponse.Ok(res, clearCart);
+            }
         } catch (error) {
             next(error.message);
         }
     }
-    cartUpdate = async (req, res, next)=> {
-        try {
-            const { id } = req.params;
-            const { products } = req.body;
-            const data = await this.service.cartUpdate(id, products);
-            res.status(200).json(data);
-        } catch (error) {
-            next(error.message);
-        }
-    }
-    createTicket = async (req, res) => {
-        try {
-            console.log('ticket controller')
-            const { cid } = req.params
-            const user = req.session.user
-            const response = await TicketService.createTicket(user, cid)
-            res.status(200).json(response)
-
-        } catch (error) {
-            throw error
-        }
-    }
-};
-
-	
+}

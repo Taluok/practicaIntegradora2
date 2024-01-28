@@ -1,77 +1,76 @@
-import { createResponse } from "../utils.js";
+import { HttpResponse } from "../utils/http.response.js";
+import { errorsDictionary } from "../utils/http.response.js";
+
+const httpResponse = new HttpResponse();
 
 export default class Controllers {
     constructor(service) {
         this.service = service;
-    };
+    }
 
-    getAll = async(req, res,  next) => {
-        try{
+    getAll = async (req, res, next) => {
+        try {
             const items = await this.service.getAll();
-            createResponse(res, 200, items);
-        }catch(error){
-            next(error.message);
-        };
+            return httpResponse.Ok(res, items);
+        } catch (error) {
+            next(error);
+        }
     };
 
-    getById = async( req, res, next) => {
-        try{
-            const { id } = req.params;
-            const item = await this.service.getById(id);
-            if(!item)
-                createResponse(res, 404, {
-                    method: "getById",
-                    error: "Sorry, Item not found",
-                });
-            else createResponse(res, 200, item);
-        }catch(error){
-            next(error.message);
-        };
-    };
-
-    create = async(req, res, next) => {
-        try{
-            const newItem = await this.service.create(req.body);
-            if(!newItem)
-                createResponse (res, 404, {
-                    method: "create",
-                    error: "Sorry, error tu create item"
-                });
-            else createResponse(res, 200, newItem);
-        }catch(error){
-            next(error.message);
-        };
-    };
-
-    update = async(req, res, next) => {
+    getById = async (req, res, next) => {
         try {
             const { id } = req.params;
             const item = await this.service.getById(id);
-            if(!item)
-                createResponse (res, 404, {
-                    method: "update",
-                    error: "Sorry, error to update item"
-                })
-            const itemUpd = await this.service.update(id, req.body);
-            createResponse(res, 200, itemUpd);
-        }catch(error){
-            next(error.message);
-        };
+            if (!item) {
+                return httpResponse.NoEncontrado(res, "Lo siento, elemento no encontrado");
+            } else {
+                return httpResponse.Ok(res, item);
+            }
+        } catch (error) {
+            next(error);
+        }
     };
 
-    delete = async(req, res, next) => {
-        try{
+    create = async (req, res, next) => {
+        try {
+            const newItem = await this.service.create(req.body);
+            if (!newItem) {
+                return httpResponse.NoEncontrado(res, errorsDictionary.ERROR_CREATE_ITEM);
+            } else {
+                return httpResponse.Ok(res, newItem);
+            }
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    update = async (req, res, next) => {
+        try {
             const { id } = req.params;
             const item = await this.service.getById(id);
-            if(!item)
-                createResponse(res, 404, {
-                    method: "delete",
-                    error: "Sorry, error to delete item"
-                });
-            const itemUpd = await this.service.delete(id);
-            createResponse(res, 200, itemUpd);
-        }catch(error){
+            if (!item) {
+                return httpResponse.NoEncontrado(res, errorsDictionary.ERROR_UPDATE_ITEM);
+            } else {
+                const itemActualizado = await this.service.update(id, req.body);
+                return httpResponse.Ok(res, itemActualizado);
+            }
+        } catch (error) {
             next(error.message);
-        };
+        }
+    };
+
+    delete = async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const item = await this.service.getById(id);
+            if (!item) {
+                return httpResponse.NoEncontrado(res, errorsDictionary.ERROR_DELETE_ITEM);
+            } else {
+                const itemEliminado = await this.service.delete(id);
+                return httpResponse.Ok(res, itemEliminado);
+            }
+        } catch (error) {
+            next(error.message);
+        }
     };
 };

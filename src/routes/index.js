@@ -1,6 +1,9 @@
 import { Router } from "express";
 import productRouter from "./product.router.js";
 import userRouter from "./user.router.js";
+import cartRouter from "./cart.router.js";
+import ticketRouter from "./ticket.router.js"
+import mockingproducts from "./mockingproducts.router.js";
 
 export default class MainRouter {
     constructor(){
@@ -11,6 +14,9 @@ export default class MainRouter {
     initRoutes() {
         this.router.use('/products', productRouter);
         this.router.use('/users', userRouter);
+        this.router.use('/carts', cartRouter);
+        this.router.use('/tickets', ticketRouter);
+        this.router.use('/mockingproducts', mockingproducts);
     };
 
     getRouter() {

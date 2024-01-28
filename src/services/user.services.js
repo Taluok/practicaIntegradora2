@@ -1,16 +1,15 @@
 import Services from "./class.services.js";
-//import UserMongoDao from "../persistence/daos/mongodb/users/user.dao.js";
 import persistence from "../persistence/persistence.js";
-const { userDao } = persistence
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
+const { userDao } = persistence;
 const SECRET_KEY_JWT = process.env.SECRET_KEY_JWT;
 
 export default class UserService extends Services {
     constructor() {
         super(userDao);
-    };
+    }
 
     #generateToken(user) {
         try {
@@ -21,10 +20,9 @@ export default class UserService extends Services {
             return token;
         } catch (error) {
             console.log('Error al generar el token:', error);
-            return null;
+            return false;
         }
-    };
-
+    }
 
     async register(user) {
         try {
@@ -53,4 +51,5 @@ export default class UserService extends Services {
             throw error;
         };
     };
+
 };

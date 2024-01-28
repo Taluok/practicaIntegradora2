@@ -1,10 +1,9 @@
-export default class UserSafeDTO {
-    constructor(id, firstName, lastName, email, role) {
-        this.id = id;
+export default class ProductResDTO {
+    constructor(user, firstName, lastName, email, role) {
+        this.user = user;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.role = role;
     }
 
     static fromEntity(userEntity) {
