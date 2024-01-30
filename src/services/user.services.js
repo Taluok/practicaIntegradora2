@@ -5,6 +5,7 @@ import "dotenv/config";
 
 const { userDao } = persistence;
 const SECRET_KEY_JWT = process.env.SECRET_KEY_JWT;
+import bcrypt from 'bcrypt';
 
 export default class UserService extends Services {
     constructor() {
@@ -26,30 +27,39 @@ export default class UserService extends Services {
 
     async register(user) {
         try {
+            const hashedPassword = await bcrypt.hash(user.password, 10);
+            user.password = hashedPassword;
             return await userDao.register(user);
         } catch (error) {
             console.log(error);
-        };
-    };
+            throw error;
+        }
+    }
 
     async login(user) {
         try {
             const userExist = await userDao.login(user);
 
             if (userExist) {
-                const token = this.#generateToken(userExist);
-                if (!token) {
-                    console.log("Error al generar el token");
+                // Verificación de contraseña utilizando bcrypt
+                const isValidPassword = await bcrypt.compare(user.password, userExist.password);
+                
+                if (isValidPassword) {
+                    const token = this.#generateToken(userExist);
+                    if (!token) {
+                        console.log("Error al generar el token");
+                        return null;
+                    }
+                    return token;
+                } else {
                     return null;
-                };
-                return token;
+                }
             } else {
                 return null;
-            };
+            }
         } catch (error) {
             console.log('user.service', error);
             throw error;
-        };
-    };
-
-};
+        }
+    }
+}

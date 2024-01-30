@@ -1,6 +1,5 @@
 import Services from "./class.services.js";
 import persistence from "../persistence/persistence.js";
-
 import { v4 as uuidv4 } from 'uuid';
 
 const { ticketDao, userDao, productDao, cartDao } = persistence;
@@ -39,11 +38,11 @@ export default class TicketService extends Services {
             cart.save();
             return ticket;
         } catch (error) {
-            throw new Error(error);
+            throw error; // Lanzar directamente el error capturado
         }
     };
+}
 
-};
 
 
 
