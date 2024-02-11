@@ -6,6 +6,7 @@ import { __dirname, mongoStoreOptions } from "./utils/utils.js";
 import exphbs from "express-handlebars";
 import session from "express-session";
 import passport from "passport";
+import path from 'path';
 import 'dotenv/config';
 import viewsRouter from "./routes/views.router.js";
 import logger from './logger.js';
@@ -21,7 +22,7 @@ app.use(passport.session());
 
 app.engine('handlebars', exphbs.engine());
 app.set('view engine', 'handlebars');
-app.set('views', __dirname + '/views');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));

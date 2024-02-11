@@ -1,15 +1,19 @@
 import { Router } from "express";
 import CartController from "../controllers/cart.controller.js"
-const router = Router();
-const controller = new CartController();
 
-router.get("/", controller.getAll);
-router.get("/:id", controller.getById);
-router.post("/", controller.create);
-router.put("/:id", controller.update);
-router.delete("/:id", controller.remove);
-router.post("/:idCart/products/:idProd", controller.addProdToCart);
-router.delete("/:idCart/products/:idProd", controller.removeProdToCart);
-router.delete("/clear/:idCart", controller.clearCart);
+const express = require('express');
+const router = express.Router();
+const CartController = require('../controllers/cart.controller.js');
+
+// Ruta para obtener el carrito actual del usuario
+router.get('/current', CartController.getCurrentCart);
+
+// Otras rutas para carritos existentes
+router.delete('/:id', CartController.remove);
+router.post('/:idCart/products/:idProd', CartController.addProdToCart);
+router.delete('/:idCart/products/:idProd', CartController.removeProdToCart);
+router.put('/:idCart/products/:idProd', CartController.updateProdQuantityToCart);
+router.delete('/:idCart', CartController.clearCart);
+
 
 export default router;

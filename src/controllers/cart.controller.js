@@ -84,4 +84,19 @@ export default class CartController extends Controllers {
             next(error.message);
         }
     }
+
+    async getCurrentCart(req, res, next) {
+        try {
+            const userId = req.user.id; 
+            const currentCart = await service.getCurrentCart(userId);
+            if (!currentCart) {
+                return httpResponse.NoEncontrado(res, "No se encontró el carrito actual del usuario");
+            } else {
+                return httpResponse.Ok(res, currentCart);
+            }
+        } catch (error) {
+            next(error);
+        }
+    }
+    
 }
