@@ -2,14 +2,14 @@ import express from "express";
 import morgan from "morgan";
 import MainRouter from "./routes/index.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import { logger } from "./utils/logger.js"
 import { __dirname, mongoStoreOptions } from "./utils/utils.js";
-import exphbs from "express-handlebars";
+import handlebars from "express-handlebars";
 import session from "express-session";
 import passport from "passport";
-import path from 'path';
-import 'dotenv/config';
 import viewsRouter from "./routes/views.router.js";
-import logger from './logger.js';
+import cookieParser from "cookie-parser";
+import config from "./config/config.js";
 
 
 const mainRouter = new MainRouter();
@@ -20,29 +20,23 @@ app.use(session(mongoStoreOptions));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.engine('handlebars', exphbs.engine());
+app.engine('handlebars', handlebars.engine());
 app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', __dirname + '/views');
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(cookieParser(config.SECRET_COOKIES))
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
+app.use('/loggerTest', (req, res) => {
+    logger.error("error en el endpoint de prueba");
+    res.send("probando logger");
+})
 app.use('/api', mainRouter.getRouter());
 app.use('/views', viewsRouter);
 app.use(errorHandler);
 
-app.get('/loggerTest', (req, res) => {
-    logger.debug('Debug message');
-    logger.http('HTTP message');
-    logger.info('Info message');
-    logger.warning('Warning message');
-    logger.error('Error message');
-    logger.fatal('Fatal message');
-    res.send('Logs enviados');
-});
+const PORT = config.PORT;
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    logger.info(`Servidor corriendo en el puerto ${PORT}`);
-});
+app.listen(PORT, () => logger.info(`SERVER UP ON PORT: ${PORT}`));
 

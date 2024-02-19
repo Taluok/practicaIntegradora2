@@ -1,9 +1,7 @@
 import Services from "./class.services.js";
 import persistence from "../persistence/persistence.js";
-import { HttpResponse, errorsDictionary } from "../utils/http.response.js";
 
 const { cartDao, productDao } = persistence;
-const httpResponse = new HttpResponse();
 
 export default class CartService extends Services {
     constructor() {
@@ -14,14 +12,15 @@ export default class CartService extends Services {
         try {
             const cartDel = await cartDao.delete(id);
             if (!cartDel) {
-                throw new Error(errorsDictionary.ERROR_DELETE_CART);
+                return false;
             } else {
                 return cartDel;
             }
         } catch (error) {
-            throw error; // Lanzar el error para que sea manejado por el middleware de manejo de errores
+            console.log(error);
         }
     };
+
 
     async addProdToCart(cartId, prodId) {
         try {

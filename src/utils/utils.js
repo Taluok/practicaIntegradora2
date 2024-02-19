@@ -2,18 +2,18 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import bcryptjs from "bcryptjs";
 import MongoStore from "connect-mongo";
-import 'dotenv/config';
 import { es, fakerES } from "@faker-js/faker";
+import config from "../config/config.js";
 
 export const mongoStoreOptions = {
-    secret: process.env.SESSION_SECRET,
+    secret: config.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
         maxAge: 10000
     },
-    store: MongoStore.create({
-        mongoUrl: process.env.MONGO_URL,
+    store: new MongoStore({
+        mongoUrl: config.MONGO_URL,
         ttl: 10,
     }),
 };
@@ -31,6 +31,8 @@ export const isValidPassword = (user, password) => {
 export const createResponse = (res, statusCode, data) => {
     return res.status(statusCode).json({ data });
 };
+
+
 
 export const generateProduct = () => {
     return {

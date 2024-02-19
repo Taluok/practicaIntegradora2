@@ -15,6 +15,9 @@ export const errorsDictionary = {
     ERROR_CREATE_USER: 'Error creating user',
     ERROR_LOGIN: 'Error login',
     ERROR_DELETE_CART: 'Error deleting cart',
+    ERROR_FIND_ITEM: 'Error finding item',
+    ERROR_TOKEN: 'Token expired',
+    ERROR_PASSWORD: 'Password equal'
 
 }
 

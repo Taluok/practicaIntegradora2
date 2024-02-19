@@ -1,65 +1,60 @@
 import Services from "./class.services.js";
 import persistence from "../persistence/persistence.js";
-import jwt from "jsonwebtoken";
-import "dotenv/config";
+import { sendMail } from "./mailing.user.services.js";
+
 
 const { userDao } = persistence;
-const SECRET_KEY_JWT = process.env.SECRET_KEY_JWT;
-import bcrypt from 'bcrypt';
 
 export default class UserService extends Services {
     constructor() {
         super(userDao);
     }
 
-    #generateToken(user) {
+    register = async (user) => {
         try {
-            const payload = {
-                userId: user._id,
-            };
-            const token = jwt.sign(payload, SECRET_KEY_JWT, { expiresIn: "10m" });
-            return token;
+            const response = await userDao.register(user);
+            await sendMail(user, 'register');
+            return response;
         } catch (error) {
-            console.log('Error al generar el token:', error);
-            return false;
-        }
-    }
+            throw new Error(error.message);
+        };
+    };
 
-    async register(user) {
+    login = async (user) => {
         try {
-            const hashedPassword = await bcrypt.hash(user.password, 10);
-            user.password = hashedPassword;
-            return await userDao.register(user);
+            const userExist = await this.dao.login(user);
+            return userExist;
         } catch (error) {
-            console.log(error);
-            throw error;
-        }
-    }
+            throw new Error(error.message);
+        };
+    };
 
-    async login(user) {
+    resetPassword = async (user) => {
         try {
-            const userExist = await userDao.login(user);
-
-            if (userExist) {
-                // Verificación de contraseña utilizando bcrypt
-                const isValidPassword = await bcrypt.compare(user.password, userExist.password);
-                
-                if (isValidPassword) {
-                    const token = this.#generateToken(userExist);
-                    if (!token) {
-                        console.log("Error al generar el token");
-                        return null;
-                    }
-                    return token;
-                } else {
-                    return null;
-                }
+            const token = await this.dao.resetPassword(user);
+            if (token) {
+                return await sendMail(user, 'resetPassword', token);
             } else {
-                return null;
-            }
+                return false;
+            };
         } catch (error) {
-            console.log('user.service', error);
-            throw error;
-        }
-    }
-}
+            throw new Error(error.message);
+        };
+    };
+
+    updatePassword = async (user, password) => {
+        try {
+            const response = await userDao.updatePassword(user, password);
+            if (!response) {
+                return false
+            } else {
+                return (
+                    response
+                );
+            };
+        } catch (error) {
+            throw new Error(error.menssage);
+        };
+    };
+
+};

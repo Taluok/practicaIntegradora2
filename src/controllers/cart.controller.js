@@ -4,57 +4,75 @@ import { HttpResponse, errorsDictionary } from "../utils/http.response.js";
 
 const httpResponse = new HttpResponse();
 const service = new CartService();
-
 export default class CartController extends Controllers {
     constructor() {
         super(service);
     };
 
-    async remove(req, res, next) {
+    remove = async (req, res, next) => {
         try {
             const { id } = req.params;
             const cartDel = await service.remove(id);
             if (!cartDel) {
-                return httpResponse.NoEncontrado(res, errorsDictionary.ERROR_DELETE_CART);
+                return (
+                    httpResponse.NotFound(res, errorsDictionary.ERROR_DELETE_CART)
+                )
             } else {
-                return httpResponse.Ok(res, cartDel);
-            }
+                return (
+                    httpResponse.Ok(res, cartDel)
+                )
+            };
         } catch (error) {
             next(error);
         }
-    }
+    };
 
-    async addProdToCart(req, res, next) {
+    addProdToCart = async (req, res, next) => {
         try {
-            const { idCart, idProd } = req.params;
-            const newProdToUserCart = await service.addProdToCart(idCart, idProd);
+            const { idCart } = req.params;
+            const { idProd } = req.params;
+            const newProdToUserCart = await service.addProdToCart(
+                idCart,
+                idProd,
+            );
             if (!newProdToUserCart) {
-                return httpResponse.NoEncontrado(res, errorsDictionary.ERROR_ADD_TO_CART);
+                return (
+                    httpResponse.NotFound(res, errorsDictionary.ERROR_ADD_TO_CART)
+                )
             } else {
-                return httpResponse.Ok(res, newProdToUserCart);
-            }
+                httpResponse.Ok(res, newProdToUserCart)
+            };
         } catch (error) {
             next(error);
         }
-    }
+    };
 
-    async removeProdToCart(req, res, next) {
+    removeProdToCart = async (req, res, next) => {
         try {
-            const { idCart, idProd } = req.params;
-            const delProdToUserCart = await service.removeProdToCart(idCart, idProd);
+            const { idCart } = req.params;
+            const { idProd } = req.params;
+            const delProdToUserCart = await service.removeProdToCart(
+                idCart,
+                idProd,
+            );
             if (!delProdToUserCart) {
-                return httpResponse.NoEncontrado(res, errorsDictionary.ERROR_DELETE_TO_CART);
+                return (
+                    httpResponse.NotFound(res, errorsDictionary.ERROR_DELETE_TO_CART)
+                )
             } else {
-                return httpResponse.Ok(res, delProdToUserCart);
-            }
+                return (
+                    httpResponse.Ok(res, delProdToUserCart)
+                )
+            };
         } catch (error) {
             next(error);
         }
-    }
+    };
 
-    async updateProdQuantityToCart(req, res, next) {
+    updateProdQuantityToCart = async (req, res, next) => {
         try {
-            const { idCart, idProd } = req.params;
+            const { idCart } = req.params;
+            const { idProd } = req.params;
             const { quantity } = req.body;
             const updateProdQuantity = await service.updateProdQuantityToCart(
                 idCart,
@@ -62,41 +80,36 @@ export default class CartController extends Controllers {
                 quantity
             );
             if (!updateProdQuantity) {
-                return httpResponse.NoEncontrado(res, "Error al actualizar la cantidad del producto en el carrito");
+                return (
+                    httpResponse.NotFound(res, "Error update product quantity to cart")
+                )
             } else {
-                return httpResponse.Ok(res, updateProdQuantity);
-            }
+                return (
+                    httpResponse.Ok(res, updateProdQuantity)
+                )
+            };
         } catch (error) {
             next(error);
         }
-    }
+    };
 
-    async clearCart(req, res, next) {
+    clearCart = async (req, res, next) => {
         try {
             const { idCart } = req.params;
-            const clearCart = await service.clearCart(idCart);
+            const clearCart = await service.clearCart(
+                idCart,
+            );
             if (!clearCart) {
-                return httpResponse.NoEncontrado(res, "Error al limpiar el carrito");
+                return (
+                    httpResponse.NotFound(res, "Error clear cart")
+                )
             } else {
-                return httpResponse.Ok(res, clearCart);
-            }
+                return (
+                    httpResponse.Ok(res, clearCart)
+                )
+            };
         } catch (error) {
             next(error.message);
         }
-    }
-
-    async getCurrentCart(req, res, next) {
-        try {
-            const userId = req.user.id; 
-            const currentCart = await service.getCurrentCart(userId);
-            if (!currentCart) {
-                return httpResponse.NoEncontrado(res, "No se encontró el carrito actual del usuario");
-            } else {
-                return httpResponse.Ok(res, currentCart);
-            }
-        } catch (error) {
-            next(error);
-        }
-    }
-    
-}
+    };
+};

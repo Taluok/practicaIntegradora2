@@ -1,29 +1,37 @@
-import factory from "../../daos/factory.js";
-const { productDao } = factory;
-import ProductReqDTO from "../../../dto/product.req.dto.js";
-import ProductResDTO from "../../../dto/product.res.dto.js";
+import persistence from "../../persistence.js";
+const { productDao } = persistence;
+import ProductReqDTO from "../../dto/product.req.dto.js";
+import ProductResDTO from "../../dto/product.res.dto.js";
 
 export default class ProductRepository {
     constructor() {
         this.dao = productDao;
-    }
+    };
 
-    async createProd(prod) {
+    async createProduct(product) {
         try {
-            const prodDTO = new ProductReqDTO(prod);
-            return await this.dao.create(prodDTO);
-        } catch (error) {
+            const productDTO = new ProductReqDTO(product);
+            return (
+                await this.dao.create(productDTO)
+            );
+        }catch(error) {
             throw new Error(error.message);
-        }
-    }
+        };
+    };
 
-    async getProdById(id) {
+    async getProductById (id) {
         try {
-            const response = await this.dao.getById(id)
-            if (!response) return false;
-            return new ProductResDTO(response);
-        } catch (error) {
+            const response = await this.dao.getById(id);
+            if(!response) {
+                return (
+                    false
+                );
+            }else {
+                const resDTO = new ProductResDTO(response);
+                return (resDTO);
+            };
+        }catch(error) {
             throw new Error(error.message);
-        }
-    }
+        };
+    };
 }
