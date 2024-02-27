@@ -1,48 +1,89 @@
+// authorization.js
+
 import jwt from 'jsonwebtoken';
-import factory from "../persistence/daos/factory.js";
+import { UserModel } from '../persistence/daos/mongodb/users/user.model.js';
+import { sendPasswordResetEmail } from '../utils/email.js';
 import config from '../config/config.js';
-const { userDao } = factory;
 
-
-const SECRET_KEY = config.SECRET_KEY_JWT
+const SECRET_KEY = config.SECRET_KEY_JWT;
 
 /**
- * Middleware que verifica si el token es válido a través del header "Authorization"
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
- * @returns 
+ * Middleware para verificar si el usuario es administrador
  */
-export const checkAuth = async (req, res, next) => {
-    const authHeader = req.get("Authorization");
-    if (!authHeader) return res.status(401).json({ msg: "Unauthorized" });
-
+export const isAdmin = async (req, res, next) => {
     try {
-        const token = authHeader.split(" ")[1];
-        const decode = jwt.verify(token, SECRET_KEY);
-        // console.log('TOKEN DECODIFICADO');
-        console.log(decode);
-        const user = await userDao.getById(decode.userId);
-        if (!user) return res.status(400).json({ msg: "Unauthorized" });
-        /* ------------------------------------ - ----------------------------------- */
-        // Verificar si el token está a punto de expirar
-        const now = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
-        const tokenExp = decode.exp; // Tiempo de expiración del token
-        const timeUntilExp = tokenExp - now; // Tiempo hasta la expiración en segundos
+        const token = req.headers.authorization.split(' ')[1];
+        const decodedToken = jwt.verify(token, SECRET_KEY);
+        const user = await UserModel.findById(decodedToken.userId);
 
-        if (timeUntilExp <= 300) {
-            // 300 segundos = 5 minutos
-            // Generar un nuevo token con un tiempo de expiración renovado
-            const newToken = userDao.generateToken(user, '15m');
-            console.log('>>>>>>SE REFRESCÓ EL TOKEN')
-            res.set("Authorization", `Bearer ${newToken}`); // Agregar el nuevo token al encabezado
+        if (!user || user.role !== 'admin') {
+            return res.status(403).json({ message: 'No estás autorizado para realizar esta acción.' });
         }
-        /* ------------------------------------ - ----------------------------------- */
-        req.user = user;
+
         next();
-    } catch (err) {
-        console.log(err);
-        return res.status(401).json({ msg: "Unauthorized" });
+    } catch (error) {
+        console.error(error);
+        return res.status(401).json({ message: 'Token inválido o expirado.' });
     }
 };
+
+/**
+ * Middleware para verificar el token de autorización
+ */
+export const verifyToken = (req, res, next) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Acceso no autorizado.' });
+        }
+        const decodedToken = jwt.verify(token, SECRET_KEY);
+        req.userData = { userId: decodedToken.userId };
+        next();
+    } catch (error) {
+        console.error(error);
+        return res.status(401).json({ message: 'Acceso no autorizado.' });
+    }
+};
+
+/**
+ * Middleware para verificar si el usuario es premium
+ */
+export const isPremiumUser = async (req, res, next) => {
+    try {
+        const userId = req.userData.userId;
+        const user = await UserModel.findById(userId);
+
+        if (!user || user.role !== 'premium') {
+            return res.status(403).json({ message: 'Acción permitida solo para usuarios premium.' });
+        }
+
+        next();
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Error interno del servidor.' });
+    }
+};
+
+/**
+ * Método para resetear la contraseña del usuario
+ */
+export const resetPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await UserModel.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado.' });
+        }
+
+        const resetToken = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '1h' });
+        sendPasswordResetEmail(email, resetToken);
+
+        return res.status(200).json({ message: 'Correo electrónico para restablecer la contraseña enviado.' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Error interno del servidor.' });
+    }
+};
+
 
