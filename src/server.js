@@ -12,6 +12,10 @@ import cookieParser from "cookie-parser";
 import config from "./config/config.js";
 import swaggerUI from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
+import cors from 'cors';
+import newsRouter from './routes/news.routes.js';
+import { reqLog } from './middlewares/reqLog.js';
+
 
 const mainRouter = new MainRouter();
 const app = express();
@@ -36,6 +40,7 @@ const specs = swaggerJSDoc(options);
 // Montar la interfaz de usuario de Swagger en la ruta '/docs'
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(specs));
 
+app.use(cors());
 app.use(session(mongoStoreOptions));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -55,6 +60,10 @@ app.use('/loggerTest', (req, res) => {
 app.use('/api', mainRouter.getRouter());
 app.use('/views', viewsRouter);
 app.use(errorHandler);
+
+app.use(reqLog);
+
+app.use('/news', newsRouter);
 
 const PORT = config.PORT;
 
