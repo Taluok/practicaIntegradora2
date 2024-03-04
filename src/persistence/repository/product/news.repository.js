@@ -1,4 +1,4 @@
-import { getDao } from "../DAOS/news.factory.js";
+import { getDao } from "../daos/news.factory.js";
 import { newsDTO } from "../DTO/news.dto.js";
 
 export default class NewsRepository {

@@ -31,12 +31,11 @@ components:
           Date: 22/02/2023
       getAllNews:
         type: array
-        items: 
-       
+        items:
           properties:
             id:
               type: string
-             
+
               example: 6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b
             title:
               type: string
@@ -44,12 +43,12 @@ components:
             body:
               type: string
               example: Argentina se consagró campeón del mundo tras vencer a Francia por penales.
-            Author: 
+            Author:
               type: string
               example: Gonzalo Bonadeo
             Image:
               type: string
-              example: http://sdfsdf.com/sdsd.jpg   
+              example: http://sdfsdf.com/sdsd.jpg
       ValidationSchemaError:
         type: object
         properties:
@@ -57,7 +56,7 @@ components:
             type: string
             description: Validation schema error.
         example:
-          message: Validation schema error.  
+          message: Validation schema error.
       NotFound:
         type: object
         properties:
@@ -65,7 +64,7 @@ components:
             type: string
             description: Error de servidor.
         example:
-          message: error de servidor.   
+          message: error de servidor.
       ErrorGetById:
         type: object
         properties:
@@ -73,9 +72,8 @@ components:
             type: string
             description: No se encontró el id en la base de datos.
         example:
-          message: No se encontró el id 564fg65d4fgdf4g564 en la base de datos.  
+          message: No se encontró el id 564fg65d4fgdf4g564 en la base de datos.
       DeleteById:
         type: string
         description: noticia eliminada
-        example: noticia eliminada     
-
+        example: noticia eliminada
