@@ -5,7 +5,7 @@ import UserFSDao from "./daos/filesystem/users/user.dao.js";
 import CartsMongoDao from "./daos/mongodb/carts/cart.dao.js";
 import CartFsDao from "./daos/filesystem/carts/cart.dao.js";
 import 'dotenv/config';
-import { initMongoDB } from "../config/connection.js";
+import { initMongoDB, initMongoDBTest } from "../config/connection.js";
 import TicketMongoDao from "./daos/mongodb/tickets/ticket.dao.js";
 
 let userDao;
@@ -29,11 +29,21 @@ switch (persistence) {
         ticketDao = new TicketMongoDao();
         console.log(persistence);
         break;
+        case "MONGOTEST":
+            await initMongoDBTest();
+            userDao = new UserMongoDao();
+            productDao = new ProductMongoDao();
+            cartDao = new CartsMongoDao();
+            ticketDao = new TicketMongoDao();
+            console.log(persistence);
+            break;
     default:
-        userDao = new UserFSDao('./src/persistence/daos/filesystem/users.json');
-        productDao = new ProductFSDao('./src/persistence/daos/filesystem/products.json');
-        cartDao = new CartFsDao('./src/persistence/daos/filesystem/carts.json')
-        ticketDao = new TicketMongoDao('./src/persistence/daos/filesystem/tickets.json');
+        await initMongoDBTest();
+        userDao = new UserMongoDao();
+        productDao = new ProductMongoDao();
+        cartDao = new CartsMongoDao();
+        ticketDao = new TicketMongoDao();
+        console.log(persistence);
         break;
 }
 

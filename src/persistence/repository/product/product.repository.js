@@ -1,7 +1,7 @@
 import persistence from "../../persistence.js";
 const { productDao } = persistence;
-import ProductReqDTO from "../../dto/product.req.dto.js";
-import ProductResDTO from "../../dto/product.res.dto.js";
+import ProductReqDTO from "../../dto/product/product.req.dto.js";
+import ProductResDTO from "../../dto/product/product.res.dto.js";
 
 export default class ProductRepository {
     constructor() {

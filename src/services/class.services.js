@@ -9,7 +9,7 @@ export default class Services {
             if(!items) return false;
             else return items;
         }catch(error){
-            console.log(error);
+            throw new Error(error.message);
         };
     };
 
@@ -19,7 +19,7 @@ export default class Services {
             if(!item) return false;
             else return item;
         }catch(error){
-            console.log(error);
+            throw new Error(error.message);
         };
     };
 
@@ -35,21 +35,24 @@ export default class Services {
 
     update = async (id, obj) => {
         try{
-            const item = await this.dao.getById(id);
-            if(!item) return false;
-            else await this.dao.update(id, obj);
+            let item = await this.dao.getById(id);
+            if(!item) {
+                return false;
+            }else {
+                const itemUpd = await this.dao.update(id, obj);   
+                return itemUpd
+            }
         }catch(error){
-            console.log(error);
+            throw new Error(error.message);
         };
     };
 
-    delete = async (id) => {
-        try{
-            const item = await this.dao.getById(id);
-            if(!item) return false;
-            else await this.dao.delete(id);
-        }catch(error){
-            console.log(error);
-        };
+    async delete(id) {
+        try {
+            const itemDeleted = await this.dao.delete(id);
+            return itemDeleted;
+        } catch(error) {
+            throw new Error(error.message);
+        }
     };
 };

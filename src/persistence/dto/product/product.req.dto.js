@@ -4,5 +4,5 @@ export default class ProductReqDTO {
         this.product_description = product.description;
         this.product_price = product.price;
         this.product_stock = product.stock;
-    }
-}
+    };
+};

@@ -1,10 +1,5 @@
-//import TicketDaoMongoDB from "../daos/mongodb/ticket.dao.js";
-//const ticketDao = new TicketDaoMongoDB();
 import Services from "./class.services.js";
 import persistence from "../persistence/persistence.js";
-//import CartService from "./cart.services.js";
-//import UserService from "./user.services.js";
-//import ProductService from "./product.services.js";
 import { v4 as uuidv4 } from 'uuid';
 
 const { ticketDao, userDao, productDao, cartDao } = persistence;
@@ -48,6 +43,7 @@ export default class TicketService extends Services {
     };
 
 };
+
 
 
 

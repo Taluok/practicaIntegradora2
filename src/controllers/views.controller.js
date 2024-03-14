@@ -11,10 +11,11 @@ export default class ViewsController {
         const user = req.session.user;
         if (user) {
             const { first_name } = user;
+            console.log("First Name:", first_name);
             res.render('profile', { user, first_name });
         } else {
-            res.render('/views/errorLogin');
-        }
+            res.redirect('views/errorLogin');
+        };
     };
 
     errorRegister(req, res) {

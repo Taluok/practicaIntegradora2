@@ -1,53 +1,77 @@
 import Services from "./class.services.js";
+import persistence from "../persistence/persistence.js";
+const { userDao } = persistence;
 import { sendMail } from "./mailing.user.services.js";
 
-const { userDao } = persistence;
 
 export default class UserService extends Services {
     constructor() {
         super(userDao);
     }
 
-
-    async register(user) {
+    register = async (user) => {
         try {
-            const response = await this.dao.register(user);
+            const response = await userDao.register(user);
             await sendMail(user, 'register');
             return response;
         } catch (error) {
             throw new Error(error.message);
-        }
-    }
+        };
+    };
 
-    async login(user) {
+    login = async (user) => {
         try {
-            const userExist = await this.dao.login(user);
+            const userExist = await userDao.login(user);
             return userExist;
         } catch (error) {
             throw new Error(error.message);
         }
-    }
+    };
 
-    async resetPassword(user) {
+    resetPassword = async (user) => {
         try {
             const token = await this.dao.resetPassword(user);
             if (token) {
-                await sendMail(user, 'resetPassword', token);
-                return true;
+                return await sendMail(user, 'resetPassword', token);
             } else {
                 return false;
+            };
+        } catch (error) {
+            throw new Error(error.message);
+        };
+    };
+
+    updatePassword = async (user, password) => {
+        try {
+            const response = await userDao.updatePassword(user, password);
+            if (!response) {
+                return false
+            } else {
+                return (
+                    response
+                );
+            };
+        } catch (error) {
+            throw new Error(error.menssage);
+        };
+    };
+
+    updateUserDocumentStatus = async (userId) => {
+        try {
+            const user = await userDao.getById(userId);
+            if (!user) {
+                return false
+            } else {
+                if (user.documentStatus) {
+                    return user.role = 'premium';
+                }
+                const updatedUser = await userDao.updateUserDocumentStatus(user);
+                console.log('UPDATEuSER SERVICE-------------->', updatedUser.role)
+                return updatedUser;
             }
         } catch (error) {
-            throw new Error(error.message);
-        }
-    }
+            throw new Error(error.menssage);
+        };
+    };
 
-    async updatePassword(user, password) {
-        try {
-            const response = await this.dao.updatePassword(user, password);
-            return response ? response : false;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
-}
+};

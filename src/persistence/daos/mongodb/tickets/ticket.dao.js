@@ -6,6 +6,4 @@ export default class TicketMongoDao extends MongoDao {
     constructor(){
         super(TicketModel);
     };
-
 };
-

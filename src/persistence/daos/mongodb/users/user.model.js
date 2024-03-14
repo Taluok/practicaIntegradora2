@@ -18,6 +18,7 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
+        required: true,
     },
     role: {
         type: String,
@@ -34,6 +35,10 @@ const userSchema = new Schema({
         type: Boolean,
         default: false,
     },
+    documentStatus: {
+        type: Boolean,
+        default: false,
+    }
 });
 const userColl = "users";
 export const UserModel = model(userColl, userSchema);

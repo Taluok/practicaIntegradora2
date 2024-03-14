@@ -1,28 +1,86 @@
 components:
   parameters:
     schemas:
-      BodyNewsPost:
+      BodyProducts:
         type: object
         required:
-          - title
-          - body
-          - author
-          - image
+          - product_name
+          - product_description
+          - product_price
+          - product_stock
         properties:
-          title:
+          product_name:
             type: string
-            description: Título de la noticia.
-          body:
+            description: Nombre del producto
+          product_description:
             type: string
-            description: Cuerpo de la noticia.
-          author:
-            type: string
-            description: Autor de la noticia.
-          image:
-            type: string
-            description: Imagen de la noticia.
+            description: Descripción del producto
+          product_price:
+            type: number
+            description: Precio del producto
+          product_stock:
+            type: number
+            description: Cantidad en stock del producto
         example:
-          title: ¡Argentina Campeón del mundo!
-          body: Argentina se consagró campeón del mundo tras vencer por penales a Francia.
-          author: Gonzalo Bonadeo
-          image: http://dfsdfs.com/fsdf.jpg
+          product_name: Laptop Ultra
+          product_description: Una potente laptop para trabajos
+          product_price: 1299.99
+          product_stock: 30
+      NewUsers:
+        type: object
+        required:
+          - first_name
+          - last_name
+          - email
+          - password
+        properties:
+          first_name:
+            type: string
+            description: Nombre del Usurario
+          last_name:
+            type: string
+            description: Apellido del usuario
+          email:
+            type: string
+            description: Mail del usuario
+          password:
+            type: string
+            description: Contraseña del usuario
+        example:
+          first_name: Fernando
+          last_name: Alonso
+          email: FernandoAlonso14@gmail.com
+          password: 1234
+          age: 42
+      LoginUsers:
+        type: object
+        required:
+          - first_name
+          - last_name
+          - email
+          - password
+        properties:
+          email:
+            type: string
+            description: Mail del usuario
+          password:
+            type: string
+            description: Contraseña del usuario
+        example:
+          email: carlosSains55@gmail.com
+          password: "1234"
+      PostNewCart:
+        type: object
+        required:
+          - product
+        properties:
+          product:
+            type: string
+            description: Id del producto
+        example:
+          product: '655ce41761b9ba468f1be76c'
+  securitySchemes:
+    BearerAuth: 
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
